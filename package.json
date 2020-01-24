@@ -4,12 +4,15 @@
   "description": "A node client for mysql",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha tests"
   },
   "author": "Vlad-Mihai Savin",
   "license": "ISC",
   "dependencies": {
     "mysql": "^2.17.1"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^7.0.0"
   }
 }
