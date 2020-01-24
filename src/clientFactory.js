@@ -24,7 +24,7 @@ module.exports = ({ host, port, user, password, database }, overrides) => {
             if (err) {
               return reject(err)
             }
-            console.log('connected as id ' + connection.threadId)
+            console.log('Connection id: ' + connection.threadId)
             resolve(connection)
         })
     })
