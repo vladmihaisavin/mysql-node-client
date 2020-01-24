@@ -1,32 +1,25 @@
 const { expect } = require('chai')
-const connectionFactory = require('../src/connectionFactory')
 const createMysqlClient = require('../src/clientFactory')
 const { CONNECTION_DATA, TABLE_SCHEMA, NEW_ENTRY, GET_FILTERS, UPDATED_ENTRY, UPDATE_FILTERS } = require('./constants')
 
-let mysqlServerConnection
 let mysqlClient
 
 describe('Mysql client tests', () => {
     describe('tests without using a database', () => {
-        after(() => {
-            if (mysqlServerConnection) {
-                mysqlServerConnection.end()
-            }
+        before(() => {
+            mysqlClient = createMysqlClient(CONNECTION_DATA)
         })
         
         describe('ConnectionFactory', () => {
             it('should connect to the mysqlServer', async () => {
-                mysqlServerConnection = await connectionFactory(CONNECTION_DATA)
-                expect(mysqlServerConnection._connectCalled).to.equal(true)
-                expect(mysqlServerConnection.state).to.equal('authenticated')
+                const connection = await mysqlClient.getConnection()
+                expect(connection._connectCalled).to.equal(true)
+                expect(connection.state).to.equal('authenticated')
+                connection.release()
             })
         })
         
         describe('DDLs', () => {
-            before(() => {
-                mysqlClient = createMysqlClient(mysqlServerConnection)
-            })
-    
             it('should create a test database', async () => {
                 const data = await mysqlClient.createDatabase('test_db')
                 expect(data.results.affectedRows).to.equal(1)
@@ -38,23 +31,26 @@ describe('Mysql client tests', () => {
                 expect(data.results).to.deep.include({ Database: 'test_db' })
             })
         })
-    })
-    describe('tests using a database', () => {
-        after(() => {
-            if (mysqlServerConnection) {
-                mysqlServerConnection.end()
+
+        after(async () => {
+            if (mysqlClient) {
+                await mysqlClient.destroyConnectionPool()
             }
         })
-        
+    })
+
+    describe('tests using a database', () => {
+        before(() => {
+            mysqlClient = createMysqlClient({ ...CONNECTION_DATA, database: 'test_db' })
+        })
+
         describe('ConnectionFactory', () => {
-            after(() => {
-                mysqlClient = createMysqlClient(mysqlServerConnection)
-            })
 
             it('should connect to the mysqlServer', async () => {
-                mysqlServerConnection = await connectionFactory({ ...CONNECTION_DATA, database: 'test_db' })
-                expect(mysqlServerConnection._connectCalled).to.equal(true)
-                expect(mysqlServerConnection.state).to.equal('authenticated')
+                const connection = await mysqlClient.getConnection()
+                expect(connection._connectCalled).to.equal(true)
+                expect(connection.state).to.equal('authenticated')
+                connection.release()
             })
         })
 
@@ -129,6 +125,12 @@ describe('Mysql client tests', () => {
                 const data = await mysqlClient.destroy('test_table', { ...GET_FILTERS, values: [ recordId ]})
                 expect(data.results.affectedRows).to.eql(1)
             })
+        })
+
+        after(async () => {
+            if (mysqlClient) {
+                await mysqlClient.destroyConnectionPool()
+            }
         })
     })
 })

@@ -1,9 +1,16 @@
-module.exports = (connection, query, options = {}) => new Promise((resolve, reject) => {
-  const queryObj = connection.query(query, options, (err, results, fields) => {
+module.exports = (connectionPool, query, options = {}) => new Promise((resolve, reject) => {
+  connectionPool.getConnection((err, connection) => {
     if (err) {
-        return reject(err)
+      return reject(err)
     }
-    return resolve({ results, fields })
+    console.log(`Connection id: ${ connection.threadId }`);
+    const queryObj = connection.query(query, options, (err, results, fields) => {
+      connection.release()
+      if (err) {
+          return reject(err)
+      }
+      return resolve({ results, fields })
+    })
+    console.log(`Executed: ${ queryObj.sql }`)
   })
-  console.log(queryObj.sql)
 })

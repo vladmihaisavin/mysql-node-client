@@ -9,15 +9,15 @@ const prepareKeyPlaceholders = (updatedFields) => {
   return placeholders.join(', ')
 }
 
-module.exports = (connection) => {
+module.exports = (connectionPool) => {
 
   const store = (tableName, record) => {
-    return connectionQueryWrapper(connection, `INSERT INTO ${ tableName } SET ?`, record)
+    return connectionQueryWrapper(connectionPool, `INSERT INTO ${ tableName } SET ?`, record)
   }
 
   const update = (tableName, updatedFields, filters) => {
     return connectionQueryWrapper(
-      connection, 
+      connectionPool, 
       `UPDATE ${ tableName } SET ${ prepareKeyPlaceholders(updatedFields) } WHERE ${ filters.placeholders }`,
       [
         ...Object.values(updatedFields),
@@ -27,7 +27,7 @@ module.exports = (connection) => {
   }
 
   const destroy = (tableName, filters) => {
-    return connectionQueryWrapper(connection, `DELETE FROM ${ tableName } WHERE ${ filters.placeholders }`, filters.values)
+    return connectionQueryWrapper(connectionPool, `DELETE FROM ${ tableName } WHERE ${ filters.placeholders }`, filters.values)
   }
 
   return {
