@@ -125,6 +125,11 @@ describe('Mysql client tests', () => {
                 const data = await mysqlClient.destroy('test_table', { ...GET_FILTERS, values: [ recordId ]})
                 expect(data.results.affectedRows).to.eql(1)
             })
+            
+            it('should make a custom query - count(*)', async () => {
+                const data = await mysqlClient.query('SELECT count(*) FROM test_table')
+                expect(Object.keys(data.results[0])[0]).to.equal('count(*)')
+            })
         })
 
         after(async () => {

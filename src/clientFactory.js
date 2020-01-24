@@ -39,6 +39,10 @@ module.exports = ({ host, port, user, password, database }, overrides) => {
         })
     })
 
+    const query = (query, options = {}) => {
+        return connectionQueryWrapper(connectionPool, query, options)
+    }
+
     return {
         getConnection,
         destroyConnectionPool,
@@ -52,6 +56,6 @@ module.exports = ({ host, port, user, password, database }, overrides) => {
         destroy,
         list,
         fetch,
-        query: connectionQueryWrapper
+        query
     }
 }
