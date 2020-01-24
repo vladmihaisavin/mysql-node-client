@@ -16,7 +16,27 @@ const TABLE_SCHEMA = [
   }
 ]
 
+const NEW_ENTRY = {
+  name: 'test_entry'
+}
+
+const GET_FILTERS = {
+  placeholders: 'id = ?'
+}
+
+const UPDATED_ENTRY = {
+  name: 'test_updated_name'
+}
+
+const UPDATE_FILTERS = {
+  placeholders: 'id > ? AND id <= ?',
+}
+
 module.exports = {
   CONNECTION_DATA,
-  TABLE_SCHEMA
+  TABLE_SCHEMA,
+  NEW_ENTRY,
+  GET_FILTERS,
+  UPDATED_ENTRY,
+  UPDATE_FILTERS
 }

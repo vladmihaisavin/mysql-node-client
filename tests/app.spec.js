@@ -1,7 +1,7 @@
 const { expect } = require('chai')
 const connectionFactory = require('../src/connectionFactory')
 const createMysqlClient = require('../src/clientFactory')
-const { CONNECTION_DATA, TABLE_SCHEMA } = require('./constants')
+const { CONNECTION_DATA, TABLE_SCHEMA, NEW_ENTRY, GET_FILTERS, UPDATED_ENTRY, UPDATE_FILTERS } = require('./constants')
 
 let mysqlServerConnection
 let mysqlClient
@@ -47,6 +47,10 @@ describe('Mysql client tests', () => {
         })
         
         describe('ConnectionFactory', () => {
+            after(() => {
+                mysqlClient = createMysqlClient(mysqlServerConnection)
+            })
+
             it('should connect to the mysqlServer', async () => {
                 mysqlServerConnection = await connectionFactory({ ...CONNECTION_DATA, database: 'test_db' })
                 expect(mysqlServerConnection._connectCalled).to.equal(true)
@@ -55,10 +59,6 @@ describe('Mysql client tests', () => {
         })
 
         describe('DDLs', () => {
-            before(() => {
-                mysqlClient = createMysqlClient(mysqlServerConnection)
-            })
-
             it('should create a test table', async () => {
                 const data = await mysqlClient.createTable('test_table', TABLE_SCHEMA)
                 expect(data.results.affectedRows).to.equal(0)
@@ -87,6 +87,47 @@ describe('Mysql client tests', () => {
                     Default: null,
                     Extra: ''
                 })
+            })
+        })
+
+        describe('DMLs', () => {
+            let recordId
+            it('should store a record', async () => {
+                const data = await mysqlClient.store('test_table', NEW_ENTRY)
+                expect(data.results.affectedRows).to.equal(1)
+                expect(data.results.insertId).to.be.gte(1)
+                recordId = data.results.insertId
+            })
+            
+            it('should list all records', async () => {
+                const data = await mysqlClient.list('test_table')
+                expect(data.results).to.deep.include({ id: recordId, ...NEW_ENTRY })
+            })
+
+            it('should list all ids of the records', async () => {
+                const data = await mysqlClient.list('test_table', [ 'id' ])
+                expect(data.results).to.deep.include({ id: recordId })
+            })
+            
+            it('should get record filtered by id', async () => {
+                const data = await mysqlClient.fetch('test_table', { ...GET_FILTERS, values: [ recordId ]})
+                expect(data.results).to.deep.include({ id: recordId, ...NEW_ENTRY })
+            })
+            
+            it('should get record filtered by id, displaying only a column', async () => {
+                const data = await mysqlClient.fetch('test_table', { ...GET_FILTERS, values: [ recordId ]}, [ 'id' ])
+                expect(data.results).to.deep.include({ id: recordId })
+            })
+            
+            it('should update record filtered by id', async () => {
+                const data = await mysqlClient.update('test_table', UPDATED_ENTRY, { ...UPDATE_FILTERS, values: [ recordId - 1, recordId ]})
+                expect(data.results.affectedRows).to.be.gte(1)
+                expect(data.results.changedRows).to.eql(1)
+            })
+            
+            it('should destroy record filtered by id', async () => {
+                const data = await mysqlClient.destroy('test_table', { ...GET_FILTERS, values: [ recordId ]})
+                expect(data.results.affectedRows).to.eql(1)
             })
         })
     })
