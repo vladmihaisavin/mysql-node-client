@@ -41,6 +41,10 @@ const test = async () => {
 test()
 ```
 
+## Connection Management
+All the connections are pooled in a connection pool. The default _connectionLimit_ is __100__ and the default _acquireTimeout_ is __10 seconds__. If all the connections in the pool are used, there's a default _queue_ of __100__ slots which can hold requests.
+All the default options can be overriden by passing a second object to the _createMysqlClient_ method.
+
 ## Methods exposed by the client
 ### __DDLs__
 
@@ -137,3 +141,6 @@ connection.query('SELECT * FROM test_table', (err, results, fields) => {
 ```javascript
 const data = await mysqlClient.query('SELECT count(*) FROM test_table')
 ```
+
+## Notes
+For more information, check the mysql driver documentation (https://www.npmjs.com/package/mysql). This implementation should be treated as a wrapper of the base driver.
