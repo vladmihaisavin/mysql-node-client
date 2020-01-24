@@ -1,7 +1,7 @@
-const mysqlClient = require('./src/client')
+const createMysqlClient = require('./src/clientFactory')
 const createMysqlConnection = require('./src/connectionFactory')
 
 module.exports = {
-  mysqlClient,
+  createMysqlClient,
   createMysqlConnection
 }

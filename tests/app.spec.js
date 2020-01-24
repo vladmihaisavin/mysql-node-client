@@ -1,6 +1,6 @@
 const { expect } = require('chai')
 const connectionFactory = require('../src/connectionFactory')
-const createMysqlClient = require('../src/client')
+const createMysqlClient = require('../src/clientFactory')
 
 const CONNECTION_DATA = {
     host: 'localhost',
