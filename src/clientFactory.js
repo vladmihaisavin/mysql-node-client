@@ -1,9 +1,15 @@
 const createDdls = require('./commands/ddls')
+const createDqls = require('./commands/dqls')
+const createDmls = require('./commands/dmls')
 
 module.exports = (connection) => {
-    const { showDatabases } = createDdls(connection)
+    const { createDatabase, listDatabases, createTable, listTables, describeTable } = createDdls(connection)
 
     return {
-        showDatabases
+        createDatabase,
+        listDatabases,
+        createTable,
+        listTables,
+        describeTable
     }
 }

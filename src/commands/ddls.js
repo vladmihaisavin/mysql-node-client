@@ -1,17 +1,39 @@
+const connectionQueryWrapper = require('../connectionQueryWrapper')
 
 module.exports = (connection) => {
-  const showDatabases = () => {
-    return new Promise((resolve, reject) => {
-      connection.query('SHOW DATABASES', (err, results, fields) => {
-        if (err) {
-            return reject(err)
-        }
-        return resolve({ results, fields })
-      })
-    })
+
+  const createDatabase = (dbName) => {
+    return connectionQueryWrapper(connection, `CREATE DATABASE IF NOT EXISTS ${ dbName }`)
+  }
+
+  const listDatabases = () => {
+    return connectionQueryWrapper(connection, 'SHOW DATABASES')
+  }
+
+  const createTable = (name, schema) => {
+    const parseSchema = (schema) => {
+      const columns = []
+      for (const column of schema) {
+        columns.push(`${ column.name } ${column.type}`)
+      }
+      return columns.join(', ')
+    }
+    return connectionQueryWrapper(connection, `CREATE TABLE IF NOT EXISTS ${ name } (${ parseSchema(schema) })`)
+  }
+
+  const listTables = () => {
+    return connectionQueryWrapper(connection, 'SHOW TABLES')
   }
   
+  const describeTable = (name) => {
+    return connectionQueryWrapper(connection, `DESCRIBE ${ name }`)
+  }
+
   return {
-    showDatabases
+    createDatabase,
+    listDatabases,
+    createTable,
+    listTables,
+    describeTable
   }
 }

@@ -1,7 +1,7 @@
 const mysql = require('mysql');
 
-module.exports = ({ host, port, user, password }) => {
-  const connection = mysql.createConnection({ host, port, user, password });
+module.exports = ({ host, port, user, password, database }) => {
+  const connection = mysql.createConnection({ host, port, user, password, database });
 
   return new Promise((resolve, reject) => {
     connection.connect((err) => {
