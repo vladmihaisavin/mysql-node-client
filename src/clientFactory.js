@@ -1,6 +1,7 @@
 const createDdls = require('./commands/ddls')
 const createDqls = require('./commands/dqls')
 const createDmls = require('./commands/dmls')
+const connectionQueryWrapper = require('./connectionQueryWrapper')
 
 module.exports = (connection) => {
     const { createDatabase, listDatabases, createTable, listTables, describeTable } = createDdls(connection)
@@ -17,6 +18,7 @@ module.exports = (connection) => {
         update,
         destroy,
         list,
-        fetch
+        fetch,
+        query: connectionQueryWrapper
     }
 }
