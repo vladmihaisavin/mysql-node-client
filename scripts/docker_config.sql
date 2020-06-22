@@ -30,3 +30,19 @@ CREATE TABLE IF NOT EXISTS authors (
   createdAt TIMESTAMP,
   updatedAt TIMESTAMP
 );
+CREATE TABLE IF NOT EXISTS authors_books (
+  author_id INT NOT NULL,
+  book_id INT NOT NULL,
+  INDEX pairId (author_id, book_id),
+  FOREIGN KEY (author_id) REFERENCES authors(id) ON DELETE CASCADE,
+  FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE
+);
+CREATE TABLE IF NOT EXISTS book_types (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  description VARCHAR(255) NOT NULL,
+  createdAt TIMESTAMP,
+  updatedAt TIMESTAMP
+);
+ALTER TABLE books ADD book_type_id INT;
+ALTER TABLE books ADD FOREIGN KEY (book_type_id) REFERENCES book_types(id);
