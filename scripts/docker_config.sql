@@ -31,6 +31,7 @@ CREATE TABLE IF NOT EXISTS authors (
   updatedAt TIMESTAMP
 );
 CREATE TABLE IF NOT EXISTS authors_books (
+  id INT AUTO_INCREMENT PRIMARY KEY,
   author_id INT NOT NULL,
   book_id INT NOT NULL,
   INDEX pairId (author_id, book_id),
