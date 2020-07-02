@@ -21,8 +21,8 @@ CREATE TABLE IF NOT EXISTS book_types (
 );
 CREATE TABLE IF NOT EXISTS books (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  book_type_id INT,
   name VARCHAR(255) NOT NULL,
+  book_type_id INT,
   description VARCHAR(255),
   pages INT,
   createdAt TIMESTAMP,
